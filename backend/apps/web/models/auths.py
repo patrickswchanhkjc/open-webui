@@ -6,7 +6,7 @@ import logging
 from peewee import *
 
 from apps.web.models.users import UserModel, Users
-from utils.utils import verify_password
+from utils.utils import verify_password, get_ldap_user, check_ldap_group
 
 from apps.web.internal.db import DB
 
@@ -131,6 +131,22 @@ class AuthsTable:
                     user = Users.get_user_by_id(auth.id)
                     return user
                 else:
+                    return None
+            else:
+                return None
+        except:
+            return None
+
+    def authenticate_user_by_ldap(self, email: str, password: str) -> Optional[UserModel]:
+
+        log.info(f"authenticate_user by ldap: {email}")
+        try:
+            if check_ldap_user(email, password):
+                auth = Auth.get(Auth.email == email, Auth.active == True)
+                if auth:
+                    user = Users.get_user_by_id(auth.id)
+                    return user
+                else: 
                     return None
             else:
                 return None

@@ -9,6 +9,7 @@ import re
 import uuid
 import csv
 
+from utils.utils import verify_password, get_ldap_user, check_ldap_group
 
 from apps.web.models.auths import (
     SigninForm,
@@ -33,7 +34,7 @@ from utils.utils import (
 from utils.misc import parse_duration, validate_email_format
 from utils.webhook import post_webhook
 from constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
-from config import WEBUI_AUTH, WEBUI_AUTH_TRUSTED_EMAIL_HEADER
+from config import WEBUI_AUTH, WEBUI_AUTH_TRUSTED_EMAIL_HEADER, WEBUI_AUTH_LDAP
 
 router = APIRouter()
 
@@ -86,6 +87,8 @@ async def update_password(
 ):
     if WEBUI_AUTH_TRUSTED_EMAIL_HEADER:
         raise HTTPException(400, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
+    if WEBUI_AUTH_LDAP:
+        raise HTTPException(400, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
     if session_user:
         user = Auths.authenticate_user(session_user.email, form_data.password)
 
@@ -134,6 +137,19 @@ async def signin(request: Request, form_data: SigninForm):
             )
 
             user = Auths.authenticate_user(admin_email.lower(), admin_password)
+    elif WEBUI_AUTH_LDAP:
+        usermail = form_data.email.lower()
+        username = get_ldap_user(usermail, form_data.password)
+        if username is not None:
+            if not Users.get_user_by_email(usermail):
+                await signup(
+                    request,
+                    SignupForm(
+                        email=usermail, password=str(uuid.uuid4()), name=username
+                    ),
+                )
+            
+        user = Auths.authenticate_user_by_ldap(usermail, form_data.password)
     else:
         user = Auths.authenticate_user(form_data.email.lower(), form_data.password)
 

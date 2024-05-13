@@ -13,6 +13,8 @@ import jwt
 import uuid
 import logging
 import config
+from ldap3 import Server, Connection, ALL, SUBTREE
+import os
 
 logging.getLogger("passlib").setLevel(logging.ERROR)
 
@@ -27,6 +29,84 @@ ALGORITHM = "HS256"
 bearer_security = HTTPBearer()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
+def check_ldap_user(email, password):
+    server_url = os.environ["LDAP_SERVER_ADDRESS"]
+    server_port =  os.environ["LDAP_SERVER_PORT"]
+
+    bind_dn = os.environ["BIND_DN"]
+    bind_pw = os.environ["BIND_PW"]
+    user_search_base = os.environ["USER_SERACH_BASE"]
+    user_search_filter = os.environ["USER_SEARCH_FILTER"]
+    group_search_filter = os.environ["GROUP_SEARCH_FILTER"]
+
+    server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
+    connection = Connection(server, bind_dn, bind_pw, auto_bind=True)
+
+    try:
+
+        if connection.bind():
+            search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
+            search_filter = search_filter.replace('%s', usermail)
+            # check if an user exists
+            connection.search(user_search_base,  search_filter, SUBTREE, attributes=["cn"])
+            # Check if the search was successful
+            domain_user = connection.entries[0].cn.value 
+
+            connection = Connection(server, domain_user, password, auto_bind=True)
+            if connection.bind():
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    except LDAPBindError:
+        print('Invalid credentials.')
+    finally:
+        # Always unbind the connection
+        connection.unbind()
+
+
+def get_ldap_user(usermail):
+
+    server_url = os.environ["LDAP_SERVER_ADDRESS"]
+    server_port =  os.environ["LDAP_SERVER_PORT"]
+
+    bind_dn = os.environ["BIND_DN"]
+    bind_pw = os.environ["BIND_PW"]
+    user_search_base = os.environ["USER_SERACH_BASE"]
+    user_search_filter = os.environ["USER_SEARCH_FILTER"]
+    group_search_filter = os.environ["GROUP_SEARCH_FILTER"]
+
+    # Create a temporary connection to try binding with the user's credentials
+    server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
+    connection = Connection(server, bind_dn, bind_pw, auto_bind=True)
+    
+
+    try:
+        # Try to bind with the user's credentials
+        if connection.bind():
+            search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
+            search_filter = search_filter.replace('%s', usermail)
+            # check if an user exists
+            connection.search(user_search_base,  search_filter, SUBTREE, attributes=["sAMAccountName"])
+
+            if connection.entries:
+                print(f'user {usermail} is authenticated')
+                for entry in connection.entries:
+                    return entry['sAMAccountName']
+            else: 
+                print("No entries found")
+                return None
+        else:
+            print('Password is incorrect.')
+            
+    except LDAPBindError:
+        print('Invalid credentials.')
+    finally:
+        # Always unbind the connection
+        connection.unbind()
 
 def verify_password(plain_password, hashed_password):
     return (

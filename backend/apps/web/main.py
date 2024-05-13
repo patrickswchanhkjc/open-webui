@@ -21,6 +21,7 @@ from config import (
     USER_PERMISSIONS,
     WEBHOOK_URL,
     WEBUI_AUTH_TRUSTED_EMAIL_HEADER,
+    WEBUI_AUTH_LDAP
 )
 
 app = FastAPI()
