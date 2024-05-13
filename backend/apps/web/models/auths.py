@@ -6,7 +6,7 @@ import logging
 from peewee import *
 
 from apps.web.models.users import UserModel, Users
-from utils.utils import verify_password, get_ldap_user, check_ldap_group
+from utils.utils import verify_password, get_ldap_user
 
 from apps.web.internal.db import DB
 
