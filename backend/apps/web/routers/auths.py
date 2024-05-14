@@ -9,7 +9,7 @@ import re
 import uuid
 import csv
 
-from utils.utils import verify_password, get_ldap_user, verify_ldap_user
+from utils.utils import verify_password, get_ldap_user, verify_ldap_user, get_group_by_ldap_user
 
 from apps.web.models.auths import (
     SigninForm,
@@ -193,11 +193,10 @@ async def signup(request: Request, form_data: SignupForm):
         raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
 
     try:
-        role = (
-            "admin"
-            if Users.get_num_users() == 0
-            else request.app.state.DEFAULT_USER_ROLE
-        )
+        role = get_group_by_ldap_user(email=form_data.email.lower())
+
+        if role is None: 
+            role = request.app.state.DEFAULT_USER_ROLE
         hashed = get_password_hash(form_data.password)
         user = Auths.insert_new_auth(
             form_data.email.lower(),
