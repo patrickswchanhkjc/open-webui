@@ -95,13 +95,11 @@ def get_group_by_ldap_user(usermail):
             search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
             search_filter = search_filter.replace('%s', usermail)
             # check if an user exists
-            print('user:', search_filter)
             connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
             if connection.entries:
                 is_user = True
-            search_filter = search_filter.replace('%s', usermail)
             search_filter = "(&" + user_search_filter + "" +  admin_search_filter + ")"
-            print('admin:', search_filter)
+            search_filter = search_filter.replace('%s', usermail)
             connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
             if connection.entries:
                 is_admin = True
