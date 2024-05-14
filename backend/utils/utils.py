@@ -61,7 +61,7 @@ def verify_ldap_user(usermail, password):
         else:
             return False
 
-    except LDAPBindError:
+    except Exception as e:
         print('Invalid credentials.')
     finally:
         # Always unbind the connection
@@ -104,7 +104,7 @@ def get_group_by_ldap_user(usermail):
         else:
             print('Password is incorrect.')
             
-    except LDAPBindError:
+    except Exception as e:
         print('Invalid credentials.')
     finally:
         # Always unbind the connection
@@ -152,7 +152,7 @@ def get_ldap_user(usermail):
         else:
             print('Password is incorrect.')
             
-    except LDAPBindError:
+    except  Exception as e:
         print('Invalid credentials.')
     finally:
         # Always unbind the connection
