@@ -168,9 +168,7 @@ WEBUI_VERSION = os.environ.get("WEBUI_VERSION", "v1.0.0-alpha.100")
 WEBUI_AUTH = os.environ.get("WEBUI_AUTH", "True").lower() == "true"
 WEBUI_AUTH_TRUSTED_EMAIL_HEADER = os.environ.get(
     "WEBUI_AUTH_TRUSTED_EMAIL_HEADER", None)
-WEBUI_AUTH_LDAP = os.environ.get(
-    "WEBUI_AUTH_LDAP", None
-)
+WEBUI_AUTH_LDAP = os.environ.get("WEBUI_AUTH_LDAP", "True").lower() == "true"
 
 
 ####################################
@@ -620,3 +618,17 @@ LITELLM_PROXY_HOST = os.getenv("LITELLM_PROXY_HOST", "127.0.0.1")
 ####################################
 
 DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{DATA_DIR}/webui.db")
+
+####################################
+# LDAP
+####################################
+LDAP_SERVER_ADDRESS = os.environ.get("LDAP_SERVER_ADDRESS", "")
+LDAP_SERVER_PORT = os.environ.get("LDAP_SERVER_PORT", "")
+BIND_DN = os.environ.get("BIND_DN", "")
+BIND_PW = os.environ.get("BIND_PW", "")
+USER_SERACH_BASE = os.environ.get("USER_SERACH_BASE", "")
+USER_SEARCH_FILTER = os.environ.get("USER_SEARCH_FILTER", "")
+ADMIN_SEARCH_FILTER = os.environ.get("ADMIN_SEARCH_FILTER", "")
+GROUP_SEARCH_FILTER = os.environ.get("GROUP_SEARCH_FILTER", "")
+USERNAME_ATTRIBUTE = os.environ.get("USERNAME_ATTRIBUTE", "")
+ACCOUNT_ATTRIBUTE = os.environ.get("ACCOUNT_ATTRIBUTE", "")

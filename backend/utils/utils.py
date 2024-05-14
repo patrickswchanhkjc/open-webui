@@ -31,15 +31,14 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def verify_ldap_user(usermail, password):
-    server_url = os.environ["LDAP_SERVER_ADDRESS"]
-    server_port =  os.environ["LDAP_SERVER_PORT"]
-
-    bind_dn = os.environ["BIND_DN"]
-    bind_pw = os.environ["BIND_PW"]
-    user_search_base = os.environ["USER_SERACH_BASE"]
-    user_search_filter = os.environ["USER_SEARCH_FILTER"]
-    group_search_filter = os.environ["GROUP_SEARCH_FILTER"]
-    account_attribute = os.environ["ACCOUNT_ATTRIBUTE"]
+    server_url = config.LDAP_SERVER_ADDRESS
+    server_port =  config.LDAP_SERVER_PORT
+    bind_dn = config.BIND_DN
+    bind_pw = config.BIND_PW
+    user_search_base = config.USER_SERACH_BASE
+    user_search_filter = config.USER_SEARCH_FILTER
+    group_search_filter = config.GROUP_SEARCH_FILTER
+    account_attribute = config.ACCOUNT_ATTRIBUTE
 
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
     connection = Connection(server, bind_dn, bind_pw, auto_bind=True)
@@ -72,17 +71,16 @@ def get_group_by_ldap_user(usermail):
     
     is_admin = False
     is_user = False
-    server_url = os.environ["LDAP_SERVER_ADDRESS"]
-    server_port =  os.environ["LDAP_SERVER_PORT"]
-
-    bind_dn = os.environ["BIND_DN"]
-    bind_pw = os.environ["BIND_PW"]
-    user_search_base = os.environ["USER_SERACH_BASE"]
-    user_search_filter = os.environ["USER_SEARCH_FILTER"]
-    admin_search_filter = os.environ["ADMIN_SEARCH_FILTER"]
-    group_search_filter = os.environ["GROUP_SEARCH_FILTER"]
-    username_attribute = os.environ["USERNAME_ATTRIBUTE"]
-    account_attribute = os.environ["ACCOUNT_ATTRIBUTE"]
+    
+    server_url = config.LDAP_SERVER_ADDRESS
+    server_port =  config.LDAP_SERVER_PORT
+    bind_dn = config.BIND_DN
+    bind_pw = config.BIND_PW
+    user_search_base = config.USER_SERACH_BASE
+    user_search_filter = config.USER_SEARCH_FILTER
+    group_search_filter = config.GROUP_SEARCH_FILTER
+    username_attribute = config.USERNAME_ATTRIBUTE
+    account_attribute = config.ACCOUNT_ATTRIBUTE
 
     # Create a temporary connection to try binding with the user's credentials
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
@@ -121,15 +119,15 @@ def get_group_by_ldap_user(usermail):
 
 def get_ldap_user(usermail):
 
-    server_url = os.environ["LDAP_SERVER_ADDRESS"]
-    server_port =  os.environ["LDAP_SERVER_PORT"]
-
-    bind_dn = os.environ["BIND_DN"]
-    bind_pw = os.environ["BIND_PW"]
-    user_search_base = os.environ["USER_SERACH_BASE"]
-    user_search_filter = os.environ["USER_SEARCH_FILTER"]
-    group_search_filter = os.environ["GROUP_SEARCH_FILTER"]
-    username_attribute = os.environ["USERNAME_ATTRIBUTE"]
+    server_url = config.LDAP_SERVER_ADDRESS
+    server_port =  config.LDAP_SERVER_PORT
+    bind_dn = config.BIND_DN
+    bind_pw = config.BIND_PW
+    user_search_base = config.USER_SERACH_BASE
+    user_search_filter = config.USER_SEARCH_FILTER
+    group_search_filter = config.GROUP_SEARCH_FILTER
+    username_attribute = config.USERNAME_ATTRIBUTE
+    account_attribute = config.ACCOUNT_ATTRIBUTE
 
     # Create a temporary connection to try binding with the user's credentials
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
