@@ -70,8 +70,8 @@ def verify_ldap_user(usermail, password):
 
 def get_group_by_ldap_user(usermail):
     
-    bool is_admin = False
-    bool is_user = False
+    is_admin = False
+    is_user = False
     server_url = os.environ["LDAP_SERVER_ADDRESS"]
     server_port =  os.environ["LDAP_SERVER_PORT"]
 
@@ -99,7 +99,7 @@ def get_group_by_ldap_user(usermail):
             if connection.entries:
                 is_user = True
             search_filter = search_filter.replace('%s', usermail)
-            search_filter = "(&" + user_search_filter + "" +  admin_search_filter + ")".
+            search_filter = "(&" + user_search_filter + "" +  admin_search_filter + ")"
             connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
             if connection.entries:
                 is_admin = True
