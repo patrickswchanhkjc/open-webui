@@ -81,6 +81,7 @@ def get_group_by_ldap_user(usermail):
     user_search_base = config.USER_SERACH_BASE
     user_search_filter = config.USER_SEARCH_FILTER
     group_search_filter = config.GROUP_SEARCH_FILTER
+    admin_search_filter = config.ADMIN_SEARCH_FILTER
     username_attribute = config.USERNAME_ATTRIBUTE
     account_attribute = config.ACCOUNT_ATTRIBUTE
 
@@ -134,7 +135,7 @@ def get_ldap_user(usermail):
     account_attribute = config.ACCOUNT_ATTRIBUTE
 
     print(f'connecting to ldap://{server_url}:{server_port}')
-    
+
     # Create a temporary connection to try binding with the user's credentials
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
     connection = Connection(server, bind_dn, bind_pw, auto_bind=True)
