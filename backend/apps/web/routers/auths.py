@@ -193,7 +193,15 @@ async def signup(request: Request, form_data: SignupForm):
         raise HTTPException(400, detail=ERROR_MESSAGES.EMAIL_TAKEN)
 
     try:
-        role = get_group_by_ldap_user(form_data.email.lower())
+
+        if WEBUI_AUTH_LDAP:        
+            role = get_group_by_ldap_user(form_data.email.lower())
+        else:
+            role = (
+            "admin"
+            if Users.get_num_users() == 0
+            else request.app.state.DEFAULT_USER_ROLE
+        )
 
         if role is None: 
             role = request.app.state.DEFAULT_USER_ROLE
