@@ -67,6 +67,54 @@ def verify_ldap_user(usermail, password):
         # Always unbind the connection
         connection.unbind()
 
+def get_group_by_ldap_user(usermail):
+    
+    bool is_admin = False
+    bool is_user = False
+    server_url = os.environ["LDAP_SERVER_ADDRESS"]
+    server_port =  os.environ["LDAP_SERVER_PORT"]
+
+    bind_dn = os.environ["BIND_DN"]
+    bind_pw = os.environ["BIND_PW"]
+    user_search_base = os.environ["USER_SERACH_BASE"]
+    user_search_filter = os.environ["USER_SEARCH_FILTER"]
+    admin_search_filter = os.environ["ADMIN_SEARCH_FILTER"]
+    group_search_filter = os.environ["GROUP_SEARCH_FILTER"]
+
+    # Create a temporary connection to try binding with the user's credentials
+    server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
+    connection = Connection(server, bind_dn, bind_pw, auto_bind=True)
+    
+
+    try:
+        # Try to bind with the user's credentials
+        if connection.bind():
+            search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
+            search_filter = search_filter.replace('%s', usermail)
+            # check if an user exists
+            connection.search(user_search_base,  search_filter, SUBTREE, attributes=["sAMAccountName"])
+            if connection.entries:
+                is_user = True
+            search_filter = search_filter.replace('%s', usermail)
+            search_filter = "(&" + user_search_filter + "" +  admin_search_filter + ")".
+            connection.search(user_search_base,  search_filter, SUBTREE, attributes=["sAMAccountName"])
+            if connection.entries:
+                is_admin = True
+        else:
+            print('Password is incorrect.')
+            
+    except LDAPBindError:
+        print('Invalid credentials.')
+    finally:
+        # Always unbind the connection
+        connection.unbind()
+
+    if is_admin:
+        return "admin"
+    elif is_user:
+        return "user"
+    else:
+        return None
 
 def get_ldap_user(usermail):
 
