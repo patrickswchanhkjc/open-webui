@@ -9,7 +9,7 @@ import re
 import uuid
 import csv
 
-from utils.utils import verify_password, get_ldap_user
+from utils.utils import verify_password, get_ldap_user, verify_ldap_user
 
 from apps.web.models.auths import (
     SigninForm,
@@ -139,7 +139,7 @@ async def signin(request: Request, form_data: SigninForm):
             user = Auths.authenticate_user(admin_email.lower(), admin_password)
     elif WEBUI_AUTH_LDAP:
         usermail = form_data.email.lower()
-        username = get_ldap_user(usermail, form_data.password)
+        username = get_ldap_user(usermail)
         if username is not None:
             if not Users.get_user_by_email(usermail):
                 await signup(

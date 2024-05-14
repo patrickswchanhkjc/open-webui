@@ -30,7 +30,7 @@ bearer_security = HTTPBearer()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def check_ldap_user(email, password):
+def verify_ldap_user(usermail, password):
     server_url = os.environ["LDAP_SERVER_ADDRESS"]
     server_port =  os.environ["LDAP_SERVER_PORT"]
 
@@ -95,7 +95,7 @@ def get_ldap_user(usermail):
             if connection.entries:
                 print(f'user {usermail} is authenticated')
                 for entry in connection.entries:
-                    return entry['sAMAccountName']
+                    return entry['sAMAccountName'].value 
             else: 
                 print("No entries found")
                 return None
