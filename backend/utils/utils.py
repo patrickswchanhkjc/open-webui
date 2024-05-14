@@ -85,7 +85,15 @@ def get_group_by_ldap_user(usermail):
     username_attribute = config.USERNAME_ATTRIBUTE
     account_attribute = config.ACCOUNT_ATTRIBUTE
 
-    print(f'connecting to ldap://{server_url}:{server_port}')
+    print(f'get_group_by_ldap_user: connecting to ldap://{server_url}:{server_port}')
+    print(f'using the following values')
+    print(f'bind_dn={bind_dn}')
+    print(f'bind_pw={bind_pw}')
+    print(f'user_search_base={user_search_base}')
+    print(f'user_search_filter={user_search_filter}')
+    print(f'group_search_filter={group_search_filter}')
+    print(f'username_attribute={username_attribute}')
+    print(f'account_attribute={account_attribute}')
 
     # Create a temporary connection to try binding with the user's credentials
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
@@ -98,11 +106,13 @@ def get_group_by_ldap_user(usermail):
             search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
             search_filter = search_filter.replace('%s', usermail)
             # check if an user exists
+            print(f'searching user with user_search_base={user_search_base}, search_filter={search_filter}, username_attribute= {username_attribute}')
             connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
             if connection.entries:
                 is_user = True
             search_filter = "(&" + user_search_filter + "" +  admin_search_filter + ")"
             search_filter = search_filter.replace('%s', usermail)
+            print(f'searching admin with user_search_base={user_search_base}, search_filter={search_filter}, username_attribute= {username_attribute}')
             connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
             if connection.entries:
                 is_admin = True
@@ -133,8 +143,15 @@ def get_ldap_user(usermail):
     group_search_filter = config.GROUP_SEARCH_FILTER
     username_attribute = config.USERNAME_ATTRIBUTE
     account_attribute = config.ACCOUNT_ATTRIBUTE
-
-    print(f'connecting to ldap://{server_url}:{server_port}')
+    print(f'get_ldap_user: connecting to ldap://{server_url}:{server_port}')
+    print(f'using the following values')
+    print(f'bind_dn={bind_dn}')
+    print(f'bind_pw={bind_pw}')
+    print(f'user_search_base={user_search_base}')
+    print(f'user_search_filter={user_search_filter}')
+    print(f'group_search_filter={group_search_filter}')
+    print(f'username_attribute={username_attribute}')
+    print(f'account_attribute={account_attribute}')
 
     # Create a temporary connection to try binding with the user's credentials
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
@@ -147,6 +164,7 @@ def get_ldap_user(usermail):
             search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
             search_filter = search_filter.replace('%s', usermail)
             # check if an user exists
+            print(f'searching with user_search_base={user_search_base}, search_filter={search_filter}, username_attribute= {username_attribute}')
             connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
 
             if connection.entries:
