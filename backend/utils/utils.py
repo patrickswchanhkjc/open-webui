@@ -39,6 +39,7 @@ def verify_ldap_user(usermail, password):
     user_search_base = os.environ["USER_SERACH_BASE"]
     user_search_filter = os.environ["USER_SEARCH_FILTER"]
     group_search_filter = os.environ["GROUP_SEARCH_FILTER"]
+    account_attribute = os.environ["ACCOUNT_ATTRIBUTE"]
 
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
     connection = Connection(server, bind_dn, bind_pw, auto_bind=True)
@@ -49,9 +50,9 @@ def verify_ldap_user(usermail, password):
             search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
             search_filter = search_filter.replace('%s', usermail)
             # check if an user exists
-            connection.search(user_search_base,  search_filter, SUBTREE, attributes=["cn"])
+            connection.search(user_search_base,  search_filter, SUBTREE, attributes=[account_attribute])
             # Check if the search was successful
-            domain_user = connection.entries[0].cn.value 
+            domain_user = connection.entries[0][account_attribute].value 
 
             connection = Connection(server, domain_user, password, auto_bind=True)
             if connection.bind():
@@ -80,6 +81,8 @@ def get_group_by_ldap_user(usermail):
     user_search_filter = os.environ["USER_SEARCH_FILTER"]
     admin_search_filter = os.environ["ADMIN_SEARCH_FILTER"]
     group_search_filter = os.environ["GROUP_SEARCH_FILTER"]
+    username_attribute = os.environ["USERNAME_ATTRIBUTE"]
+    account_attribute = os.environ["ACCOUNT_ATTRIBUTE"]
 
     # Create a temporary connection to try binding with the user's credentials
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
@@ -92,12 +95,12 @@ def get_group_by_ldap_user(usermail):
             search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
             search_filter = search_filter.replace('%s', usermail)
             # check if an user exists
-            connection.search(user_search_base,  search_filter, SUBTREE, attributes=["sAMAccountName"])
+            connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
             if connection.entries:
                 is_user = True
             search_filter = search_filter.replace('%s', usermail)
             search_filter = "(&" + user_search_filter + "" +  admin_search_filter + ")".
-            connection.search(user_search_base,  search_filter, SUBTREE, attributes=["sAMAccountName"])
+            connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
             if connection.entries:
                 is_admin = True
         else:
@@ -126,6 +129,7 @@ def get_ldap_user(usermail):
     user_search_base = os.environ["USER_SERACH_BASE"]
     user_search_filter = os.environ["USER_SEARCH_FILTER"]
     group_search_filter = os.environ["GROUP_SEARCH_FILTER"]
+    username_attribute = os.environ["USERNAME_ATTRIBUTE"]
 
     # Create a temporary connection to try binding with the user's credentials
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
@@ -138,12 +142,12 @@ def get_ldap_user(usermail):
             search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
             search_filter = search_filter.replace('%s', usermail)
             # check if an user exists
-            connection.search(user_search_base,  search_filter, SUBTREE, attributes=["sAMAccountName"])
+            connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
 
             if connection.entries:
                 print(f'user {usermail} is authenticated')
                 for entry in connection.entries:
-                    return entry['sAMAccountName'].value 
+                    return entry[username_attribute].value 
             else: 
                 print("No entries found")
                 return None
