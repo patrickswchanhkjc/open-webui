@@ -40,7 +40,7 @@ def verify_ldap_user(usermail, password):
     group_search_filter = config.GROUP_SEARCH_FILTER
     account_attribute = config.ACCOUNT_ATTRIBUTE
 
-    print(f'connecting to ldap://{server_url}:{server_port}')
+    print(f'verify_ldap_user: connecting to ldap://{server_url}:{server_port}')
 
     server = Server(f'ldap://{server_url}:{server_port}',  get_info=ALL)
     connection = Connection(server, bind_dn, bind_pw, auto_bind=True)
@@ -51,6 +51,7 @@ def verify_ldap_user(usermail, password):
             search_filter = "(&" + user_search_filter + "" +  group_search_filter + ")"
             search_filter = search_filter.replace('%s', usermail)
             # check if an user exists
+            print(f'searching user with user_search_base={user_search_base}, search_filter={search_filter}, username_attribute= {account_attribute}')
             connection.search(user_search_base,  search_filter, SUBTREE, attributes=[account_attribute])
             # Check if the search was successful
             domain_user = connection.entries[0][account_attribute].value 
@@ -168,9 +169,11 @@ def get_ldap_user(usermail):
             connection.search(user_search_base,  search_filter, SUBTREE, attributes=[username_attribute])
 
             if connection.entries:
-                print(f'user {usermail} is authenticated')
+                print(f'usermail {usermail} is authenticated')
                 for entry in connection.entries:
-                    return entry[username_attribute].value 
+                    username = entry[username_attribute].value
+                    print(f'username {username}')
+                    return username
             else: 
                 print("No entries found")
                 return None
